@@ -9,41 +9,69 @@
 </head>
 <body>
 <form action="" method="POST">
-    ID入力：<input type="text" name="ID" value=""><br>
     コメント入力：<input type="text" name="contents" value=""><br>
     <input type="submit" value="送信">
 </form>
 
 <?php
-$db = mysqli_connect("mysql", "test", "test", "test") or die("接続に失敗しました");
-echo "接続に成功しました";
-mysqli_set_charset( $db, 'utf8');
 
-// $sql = 'INSERT INTO (id, contents)
-// VALUES ($_POST["ID"], $_POST["contents"])';
-// var_dump ($sql);
 
-// PDOでINSERT文を使ってMySQLにデータを挿入
-// INSERT文を変数に格納
-$sql = "INSERT INTO posts (id, contents, create_times) VALUES (:id, :contents, now())";
-var_dump($sql);
+// データベースに接続するために必要なデータソースを変数に格納
+  // mysql:host=ホスト名;dbname=データベース名;charset=文字エンコード
+  $dsn = 'mysql:host=mysql;dbname=test;charset=utf8';
+ 
+  // データベースのユーザー名
+$user = 'test';
+ 
+  // データベースのパスワード
+$password = 'test';
+ 
+// tryにPDOの処理を記述
+if (isset ($_POST["contents"]) ) {
+try {
+ 
+  // PDOインスタンスを生成
+  $dbh = new PDO($dsn, $user, $password);
+  echo "接続できました";
+
+ // INSERT文を変数に格納
+$sql = "INSERT INTO posts (contents) VALUES (:contents)";
+ 
 // 挿入する値は空のまま、SQL実行の準備をする
 $stmt = $dbh->prepare($sql);
  
 // 挿入する値を配列に格納する
-$params = array(':id' => '55', ':contents' => 'tameshi-tameshi');
- var_dump($params);
+$params = array(':contents' => $_POST["contents"]);
+
+ 
 // 挿入する値が入った変数をexecuteにセットしてSQLを実行
 $stmt->execute($params);
- 
+
 // 登録完了のメッセージ
 echo '登録完了しました';
+// エラー（例外）が発生した時の処理を記述
+} catch (PDOException $e) {
+ 
+  // エラーメッセージを表示させる
+  echo 'データベースにアクセスできません！' . $e->getMessage();
+ 
+  // 強制終了
+  exit;
+ 
+}
+}
+$_POST = NULL;
 
+$sql_select = "SELECT * FROM posts";
 
+$res = $dbh->query ($sql_select);
 
+foreach ($res as $value) {
+  echo "$value[id]<br>";
+  echo "$value[contents]<br>";
+  echo "$value[create_times]<br>";
+};
 
-mysqli_query($db, $sql);
-mysqli_close($db);
 
 ?>
 
