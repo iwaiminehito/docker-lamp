@@ -1,3 +1,8 @@
+<?php
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  header('Location:http://localhost:8080/kadai/posts.php');
+}
+?>
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -14,11 +19,7 @@
 </form>
 
 <?php
-
-
-// データベースに接続するために必要なデータソースを変数に格納
-  // mysql:host=ホスト名;dbname=データベース名;charset=文字エンコード
-  $dsn = 'mysql:host=mysql;dbname=test;charset=utf8';
+$dsn = 'mysql:host=mysql;dbname=test;charset=utf8';
  
   // データベースのユーザー名
 $user = 'test';
@@ -36,6 +37,7 @@ try {
 
  // INSERT文を変数に格納
 $sql = "INSERT INTO posts (contents) VALUES (:contents)";
+var_dump($sql);
  
 // 挿入する値は空のまま、SQL実行の準備をする
 $stmt = $dbh->prepare($sql);
@@ -43,7 +45,6 @@ $stmt = $dbh->prepare($sql);
 // 挿入する値を配列に格納する
 $params = array(':contents' => $_POST["contents"]);
 
- 
 // 挿入する値が入った変数をexecuteにセットしてSQLを実行
 $stmt->execute($params);
 
@@ -59,18 +60,20 @@ echo '登録完了しました';
   exit;
  
 }
+} else {
+  echo "接続できません";
 }
-$_POST = NULL;
+// $_POST = NULL;
 
-$sql_select = "SELECT * FROM posts";
+// $sql_select = "SELECT * FROM posts";
 
-$res = $dbh->query ($sql_select);
+// $res = $dbh->query ($sql_select);
 
-foreach ($res as $value) {
-  echo "$value[id]<br>";
-  echo "$value[contents]<br>";
-  echo "$value[create_times]<br>";
-};
+// foreach ($res as $value) {
+//   echo "$value[id]<br>";
+//   echo "$value[contents]<br>";
+//   echo "$value[create_times]<br>";
+// };
 
 
 ?>
