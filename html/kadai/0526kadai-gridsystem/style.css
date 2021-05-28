@@ -1,0 +1,32 @@
+
+.container-background {
+  background-color: rgb(244, 244, 244);
+  margin-bottom: 30px;
+}
+.form-group {
+  padding-top: 20px;
+}
+.form-background {
+  padding-top: 20px;
+  border-radius: 8px;
+  background-color: rgb(209, 209, 210);
+}
+.form-control {
+  margin-top: 20px;
+}
+.input-submit {
+  margin-bottom: 20px;
+}
+input {
+  padding: 10px;
+  line-height: 1.5;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  box-shadow: 1px 1px 1px #999;
+}
+.create_times {
+  color: rgb(145, 145, 145);
+}
+p {
+  overflow-wrap: break-word;
+}
