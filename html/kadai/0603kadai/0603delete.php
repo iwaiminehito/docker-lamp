@@ -6,7 +6,7 @@
   </head>
   <body>
   <!-- 削除する投稿のidをpostで送る -->
-  <form method="POST">
+  <form method="GET">
   <input type="submit" value="削除する" name="posts_id">
   </form>
   <a href="0603kadai.php">キャンセル</a><br>
@@ -16,6 +16,7 @@
   </body>
 </html>
 <?php
+  var_dump($_GET['delete_id']);
 try {
   $user = "test";
   $password = "test";
@@ -24,7 +25,9 @@ try {
   $sql_delete = "DELETE FROM posts WHERE id = :id";
   $stmt = $dbh->prepare($sql_delete);
 
-  $stmt->execute(array(':id' => $_POST['posts_id']));
+  $stmt->execute(array(':id' => $_GET['delete_id']));
+  var_dump($_GET['delete_id']);
+
 
   echo "削除しました。";
 

@@ -1,7 +1,7 @@
 <?php
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  header('Location:http://localhost:8080/kadai/0603kadai/0603kadai.php');
-}
+// if ($_SERVER['REQUEST_METHOD'] === 'POST' || 'GET') {
+//   header('Location:http://localhost:8080/kadai/0603kadai/0603kadai.php');
+// }
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -29,16 +29,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
       </div>
     </form>
-              
+
     <?php
-    // if (isset ($_POST["contents"]) ) {
+    try {
+      $dsn = 'mysql:host=mysql;dbname=test;charset=utf8';
+      $user = "test";
+      $password = "test";
+
+      $dbh = new PDO("mysql:host=mysql;dbname=test;charset=utf8", "$user", "$password");
+
+    } catch (Exception $e) {
+        echo 'エラーが発生しました。:' . $e->getMessage();
+      } 
+    //コメントを投稿するためのコード
+    if (!empty ($_POST["contents"]) ) {
       try {
-        $dsn = 'mysql:host=mysql;dbname=test;charset=utf8';
-        $user = "test";
-        $password = "test";
-
-        $dbh = new PDO("mysql:host=mysql;dbname=test;charset=utf8", "$user", "$password");
-
         // コメント投稿するためのコード
         $sql = "INSERT INTO posts (contents) VALUES (:contents)";
         $stmt = $dbh->prepare($sql);
@@ -50,7 +55,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
       } catch (Exception $e) {
           echo 'エラーが発生しました。:' . $e->getMessage();
-        } 
+      } 
+    } else {
+      echo "コメントを入力してください";
+    }
+
+    // コメント一覧を表示するためのコード
+
+
 
       // コメント表示するためのコード
       $sql_select = "SELECT * FROM posts ORDER BY create_times DESC";
@@ -61,12 +73,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo ("$value[id] 　|　");
         echo "<span class=\"create_times\">$date</span> <br>";
         echo "<p>$value[contents]</p>";
-        echo "<a href=0603delete.php?id=" . $value["id"] . "?>削除</a>";
+        echo "<form action=\"0603delete.php\" method=\"GET\">";
+        echo "<input type=\"hidden\" name=\"delete_id\" value=\"" . $value["id"] . "\">";
+        echo "<input type=\"submit\" value=\"削除\">";
+        echo "</form>";
+        echo "<form action=\"0603edit.php\" method=\"GET\">";
+        echo 	"<input type=\"hidden\" name=\"edit_id\" value=\"" . $value["id"] . "\">";
+        echo 	"<input type=\"hidden\" name=\"edit_contents\" value=\"" . $value["contents"] . "\">";
+        echo 	"<input type=\"submit\" value=\"編集\">";
+        echo "</form>";
         echo "<hr>";
       }
-    // } else {
-    //   echo "接続できません";
-    // }
+
+
       ?>
   </div>
 </body>
@@ -75,8 +94,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ・pdo使用／htmlからpostでinsert文で追加／select文で表示
 ・グリッドシステムでレスポンシブ
 ・できれば投稿が上から新しい順に, SELECTに何かを追加
-・削除／編集ボタン作成-->
+・削除／編集ボタン作成
 
-<!-- 
-・DELETE from posts WHERE id = :id
- -->
+・submitは単にボタン生成。別にinputタグ作ってvalue属性に受け渡したい値を入れる
+
+-->
+
