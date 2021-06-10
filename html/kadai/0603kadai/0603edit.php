@@ -5,7 +5,7 @@
     <title>編集するためのページ</title>
   </head>
   <body>
-    <form action="0603kadai.php" method="POST">
+    <form action="" method="POST">
       <textarea name="contents-edits"><?php echo $_GET["edit_contents"]?></textarea>
       <input type="submit" name="contents-btn" value="更新する">
     </form>
@@ -26,10 +26,8 @@ if (!empty ($_POST["contents-btn"]) ) {
     $stmt = $dbh->prepare($sql_edit);
     $stmt->bindParam(':id', $_GET['edit_id'], PDO::PARAM_STR);
     $stmt->bindParam(':contents', $_POST['contents-edits'], PDO::PARAM_STR);
-    //$stmt = $dbh->prepare($sql_edit);
     $stmt->execute();
-    //$stmt->execute();
-    var_dump($_GET['edit_id']);
+    var_dump($sql_edit);
     echo "更新しました。";
 
   } catch (Exception $e) {

@@ -19,7 +19,7 @@
       <div class="form-group">
         <div class="row">
           <div class="col-1"></div>
-          <input type="text" name="contents" class="form-control form-control-lg col-10" placeholder="コメントを入力してください" >
+          <textarea name="contents" class="form-control form-control-lg col-10" placeholder="コメントを入力してください" ></textarea>
           <div class="col-1"></div>
         </div>
         <div class="row">
@@ -78,9 +78,9 @@
         echo "<input type=\"submit\" value=\"削除\">";
         echo "</form>";
         echo "<form action=\"0603edit.php\" method=\"GET\">";
-        echo 	"<input type=\"hidden\" name=\"edit_id\" value=\"" . $value["id"] . "\">";
-        echo 	"<input type=\"hidden\" name=\"edit_contents\" value=\"" . $value["contents"] . "\">";
-        echo 	"<input type=\"submit\" value=\"編集\">";
+        echo "<input type=\"hidden\" name=\"edit_id\" value=\"" . $value["id"] . "\">";
+        echo "<input type=\"hidden\" name=\"edit_contents\" value=\"" . $value["contents"] . "\">";
+        echo "<input type=\"submit\" value=\"編集\">";
         echo "</form>";
         echo "<hr>";
       }
