@@ -1,19 +1,14 @@
 <?php
-// セッション開始
 session_start();
 
-// $db['host'] = "mysql";  // DBサーバのURL
-// $db['user'] = "test";  // ユーザー名
-// $db['pass'] = "test";  // ユーザー名のパスワード
-// $db['dbname'] = "test";  // データベース名
 $dsn = 'mysql:host=mysql;dbname=test;charset=utf8';
 $user = "test";
 $password = "test";
 
-// エラーメッセージ、登録完了メッセージの初期化
 $errorMessage = "";
 $signUpMessage = "";
 
+// submitが押されたら
 if (isset($_POST["signUp"])) {
 
     if (empty($_POST["username"])) { 
@@ -26,18 +21,17 @@ if (isset($_POST["signUp"])) {
         // 入力したユーザIDとパスワードを格納
         $username = $_POST["username"];
         $email = $_POST["email"];
-        $dsn = 'mysql: host=mysql; dbname=test; charset=utf8';
+        $dsn = 'mysql:host=mysql;dbname=test;charset=utf8';
         // 2. ユーザIDとパスワードが入力されていたら認証する
         // $dsn = sprintf('mysql: host=%s; dbname=%s; charset=utf8', $db['host'], $db['dbname']);
         
         try {
-            $pdo = new PDO("mysql:host=mysql;dbname=test;charset=utf8", "$user", "$password");
-            $sql = "INSERT INTO posts(username, email) VALUES (:username, :email)";
-           
+            $pdo = new PDO($dsn, "$user", "$password");
+            $sql = "INSERT INTO users(username, email) VALUES (:username, :email)";
             $stmt = $pdo->prepare($sql);
-            $params = array(':username', ':email' => $_POST["username"], $_POST["email"]);
+
+            $params = array(':username' => $username, ':email' => $email);
             $stmt->execute($params);
-            var_dump($stmt);
 
             $signUpMessage = '登録が完了しました。あなたの登録IDは '. $userid. ' です。メールアドレスは '. $email. ' です。';  // ログイン時に使用するIDとパスワード
         } catch (PDOException $e) {
