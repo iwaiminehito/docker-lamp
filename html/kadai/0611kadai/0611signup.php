@@ -2,7 +2,7 @@
 session_start();
 
 // 管理ページのログインパスワード
-define( 'PASSWORD', 'adminPassword');
+// define( 'PASSWORD', 'adminPassword');
 
 // データベースの接続情報
 $dsn = 'mysql:host=mysql;dbname=test;charset=utf8';
@@ -47,8 +47,8 @@ $password = "test";
         <legend>ログインフォーム</legend>
           ユーザー名：<input type="text" name="username" placeholder="ユーザー名を入力" value="">
           <br>
-          メールアドレス：<input type="email" name="email" placeholder="メールアドレスを入力" value="" >
-          <br>
+          <!-- メールアドレス：<input type="email" name="email" placeholder="メールアドレスを入力" value="" >
+          <br> -->
         <input type="submit" name="btn_submit" value="ログイン">
       </fieldset>
     </form>
@@ -64,15 +64,15 @@ try {
   $pdo = new PDO ($dsn, $user, $password);
 
   $sql = 'SELECT * FROM users WHERE username = :username';
-
+  
   $stmt = $pdo->prepare($sql);
 
   $stmt -> execute();
-  var_dump($stmt);
-  echo 1111;
 
   $row = $stmt->fetch(PDO::FETCH_ASSOC);
   var_dump($row);
+  echo 1111;
+
 
 } catch (PDOException $e) {
   $errorMessage = 'データベースエラー';
@@ -80,9 +80,11 @@ try {
   echo $e->getMessage();
 }
 
-//usernameがDB内に存在しているか確認
+// usernameがDB内に存在しているか確認
 if (!isset ($row['username'])) {
   var_dump($row);
+  echo 3333;
+
   echo 'メールアドレス又はパスワードが間違っています。';
   return false;
 }
@@ -93,6 +95,7 @@ if (password_verify($_POST['username'], $row['username'])) {
   $_SESSION['USERNAME'] = $row['username'];
   echo 'ログインしました';
 } else {
+  echo 4444;
   echo 'メールアドレス又はパスワードが間違っています。';
   return false;
 }
