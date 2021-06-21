@@ -63,12 +63,16 @@ $password = "test";
 try {
   $pdo = new PDO ($dsn, $user, $password);
 
-  $sql = "SELECT * FROM users WHERE username = :username";
+  $sql = 'SELECT * FROM users WHERE username = :username';
 
   $stmt = $pdo->prepare($sql);
 
-  $stmt -> execute([$_POST['username']]);
+  $stmt -> execute();
+  var_dump($stmt);
+  echo 1111;
+
   $row = $stmt->fetch(PDO::FETCH_ASSOC);
+  var_dump($row);
 
 } catch (PDOException $e) {
   $errorMessage = 'データベースエラー';
