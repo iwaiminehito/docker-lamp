@@ -28,37 +28,32 @@ $password = "test";
             <li>・<?php echo $value; ?></li>
 		<?php endforeach; ?>
     </ul>
-<?php endif;   ?>
+<?php endif;?>
 
 <section>
-
-<!-- <?php if( !empty($_SESSION['admin_login']) && $_SESSION['admin_login'] === true ): //のちにはdb登録されたパスワードと照合させるようにする ?> -->
-
-<?php if( !empty($message_array) ){ ?>
-<?php foreach( $message_array as $value ){ ?>
-<article>
-    <div class="info">
-      <h2><?php echo htmlspecialchars($value['view_name'], ENT_QUOTES, 'UTF-8'); ?></h2>
-      <time><?php echo date('Y年m月d日 H:i', strtotime($value['post_date'])); ?></time>
-    </div>
-    <p><?php echo nl2br( htmlspecialchars( $value['message'], ENT_QUOTES, 'UTF-8') ); ?></p>
-</article>
-<?php } ?>
-<?php } ?>
-
-<?php else: ?>
-  <form name="loginForm" action="" method="POST">
-    <fieldset>
-      <legend>ログインフォーム</legend>
-        ユーザー名：<input type="text" name="username" placeholder="ユーザー名を入力" value="">
-        <br>
-        メールアドレス：<input type="email" name="email" placeholder="メールアドレスを入力" value="" >
-        <br>
-      <input type="submit" name="btn_submit" value="ログイン">
-    </fieldset>
-  </form>
-  <a href="0611register-01.php">新規登録はこちらから</a>
-<?php endif; ?>
+  <?php if( !empty($message_array) ){ ?>
+    <?php foreach( $message_array as $value ){ ?>
+      <article>
+          <div class="info">
+            <h2><?php echo htmlspecialchars($value['view_name'], ENT_QUOTES, 'UTF-8'); ?></h2>
+            <time><?php echo date('Y年m月d日 H:i', strtotime($value['post_date'])); ?></time>
+          </div>
+          <p><?php echo nl2br( htmlspecialchars( $value['message'], ENT_QUOTES, 'UTF-8') ); ?></p>
+      </article>
+    <?php } ?>
+  <?php } else {?>
+    <form name="loginForm" action="" method="POST">
+      <fieldset>
+        <legend>ログインフォーム</legend>
+          ユーザー名：<input type="text" name="username" placeholder="ユーザー名を入力" value="">
+          <br>
+          メールアドレス：<input type="email" name="email" placeholder="メールアドレスを入力" value="" >
+          <br>
+        <input type="submit" name="btn_submit" value="ログイン">
+      </fieldset>
+    </form>
+    <a href="0611register-01.php">新規登録はこちらから</a>
+  <?php } ?>
 </section>
 </body>
 </html>
@@ -68,18 +63,12 @@ $password = "test";
 try {
   $pdo = new PDO ($dsn, $user, $password);
 
-  $username = $_POST['username'];
-
-  $sql = "SELECT * FROM users WHERE username LIKE (:username)";
+  $sql = "SELECT * FROM users WHERE username = :username";
 
   $stmt = $pdo->prepare($sql);
 
   $stmt -> execute([$_POST['username']]);
   $row = $stmt->fetch(PDO::FETCH_ASSOC);
-  var_dump($row);
-
-
-
 
 } catch (PDOException $e) {
   $errorMessage = 'データベースエラー';
