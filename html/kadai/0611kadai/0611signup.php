@@ -1,8 +1,7 @@
 <?php
 session_start();
 
-// 管理ページのログインパスワード
-// define( 'PASSWORD', 'adminPassword');
+
 
 // データベースの接続情報
 $dsn = 'mysql:host=mysql;dbname=test;charset=utf8';
@@ -66,6 +65,8 @@ try {
   $sql = 'SELECT * FROM users WHERE username = :username';
   
   $stmt = $pdo->prepare($sql);
+
+  $stmt->bindValue(':username', $username, PDO::PARAM_STR);
 
   $stmt -> execute();
 
