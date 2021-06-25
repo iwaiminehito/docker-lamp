@@ -1,13 +1,16 @@
 <?php
 session_start();
+// postであればリダイレクトする
+// postの時はformの値が送信されている時
+// getの時は送信されていない時なのでリダイレクトしない
+// if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+//   header('Location:0611signup.php');
+// }
 
 
-
-// データベースの接続情報
 $dsn = 'mysql:host=mysql;dbname=test;charset=utf8';
 $user = "test";
 $password = "test";
-
 ?>
 
 <!DOCTYPE html>
@@ -58,46 +61,62 @@ $password = "test";
 </html>
 
 <?php 
-//DB内でPOSTされたメールアドレスを検索
-try {
-  $pdo = new PDO ($dsn, $user, $password);
+if( !empty($_POST['btn_submit']) ) {
+  $clean = htmlspecialchars($_POST['username'], ENT_QUOTES, 'UTF-8');
+  // preg_replace( '/\\r\\n|\\n|\\r/', '', $_POST['username']);
+  var_dump($clean);
 
-  $sql = 'SELECT * FROM users WHERE username = :username';
-  
-  $stmt = $pdo->prepare($sql);
+  try {
+    $pdo = new PDO ($dsn, $user, $password);
 
-  $stmt->bindValue(':username', $username, PDO::PARAM_STR);
+    $sql = 'SELECT * FROM users WHERE username = :username';
+    
+    $stmt = $pdo->prepare($sql);
 
-  $stmt -> execute();
-
-  $row = $stmt->fetch(PDO::FETCH_ASSOC);
-  var_dump($row);
-  echo 1111;
+    $stmt->bindValue(':username', $_POST['username'], PDO::PARAM_STR);
 
 
-} catch (PDOException $e) {
-  $errorMessage = 'データベースエラー';
-  $e->getMessage(); 
-  echo $e->getMessage();
-}
+    $stmt -> execute();
 
-// usernameがDB内に存在しているか確認
-if (!isset ($row['username'])) {
-  var_dump($row);
-  echo 3333;
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-  echo 'メールアドレス又はパスワードが間違っています。';
-  return false;
-}
+  } catch (PDOException $e) {
+    $errorMessage = 'データベースエラー';
+    $e->getMessage(); 
+    echo $e->getMessage();
+  }
 
-//パスワード確認後sessionにメールアドレスを渡す
-if (password_verify($_POST['username'], $row['username'])) {
-  session_regenerate_id(true); //session_idを新しく生成し、置き換える
-  $_SESSION['USERNAME'] = $row['username'];
-  echo 'ログインしました';
-} else {
-  echo 4444;
-  echo 'メールアドレス又はパスワードが間違っています。';
-  return false;
+  // usernameがDB内に存在しているか確認
+  if (!isset ($row['username'])) {
+
+    echo 'メールアドレス又はパスワードが間違っていますaaaa。';
+    exit;
+    //プログラム止める excit redirect
+  } else {
+    $flag = 1;
+  }
+
+  //パスワード確認後sessionにusernameを渡す
+  if ($flag) {
+    // session_regenerate_id(true); //session_idを新しく生成し、置き換える
+    $_SESSION['USERNAME'] = $row['username'];
+    echo 'ログインしました';
+  } else {
+    echo 'メールアドレス又はパスワードが間違。';
+    //セッションできなかったら、サインアップ画面を再表示させる
+  }
 }
 ?>
+
+<!-- 
+  ＄rowにフェッチで取得したデータを保持していればif文を通す
+  issetは変数が宣言されていれば、またnullでなければtrueを返す
+  is_nullは変数がnullかどうか調べる
+  is_null ($value) 引数がnullならtrue、違うならfalseを返す
+  
+  0625より次のマター
+  <script>alert("Hello");</script>対策
+  バリデーション
+  サニタイズ
+  リダイレクトしてログイン成功メッセージ
+ -->
