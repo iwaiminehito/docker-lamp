@@ -7,10 +7,32 @@ session_start();
 //   header('Location:0611signup.php');
 // }
 
+// ログインできなかったらリダイレクトで新規登録画面に遷移させる
+// if (!empty($_POST['btn_submit']) || !isset ($row['username'])) {
+// header('Location: 0611register-01.php');
+// }
+
+// 条件分岐で
+// flagが1つまりusernameが空であればエラーを出力
+// flagが2つまりusernameあるけどdbと合致しなしなければ新規登録に遷移
+
+if (empty ($_POST['username'])) {
+  $flag = 1;
+} elseif (!empty ($_POST['username']) || !isset ($row['username'])) {
+  $flag = 2;
+}
 
 $dsn = 'mysql:host=mysql;dbname=test;charset=utf8';
 $user = "test";
 $password = "test";
+
+// 最初からエラーメッセージが出力されるのは、全てif文を通ってしまっているから
+
+$error_message[] = "ユーザー名を入力してください";
+
+// if (!empty($_POST['btn_submit']) || empty($_POST['username'])) {
+//   $error_message[] = "ユーザー名を入力してください";
+// }
 ?>
 
 <!DOCTYPE html>
@@ -24,13 +46,22 @@ $password = "test";
 <body>
 
 <h1>ログイン画面</h1>
-<?php if( !empty($error_message) ): ?>
-    <ul class="error_message">
+<?php if( !empty($error_message) || !empty($_POST['btn_submit'])): ?>
+    <ul>
 		<?php foreach( $error_message as $value ): ?>
-            <li>・<?php echo $value; ?></li>
+            <li><?php echo $value; ?></li>
 		<?php endforeach; ?>
     </ul>
 <?php endif;?>
+
+<?php 
+$limitMax = 16;
+$limitMin = 6;
+$namelength = mb_strlen($_POST['username']);
+if ($namelength > 10 || $namelength < 5) {
+ echo '6文字以上、16文字以下で入力して下さい';
+}
+?>
 
 <section>
   <?php if( !empty($message_array) ){ ?>
@@ -63,8 +94,9 @@ $password = "test";
 <?php 
 if( !empty($_POST['btn_submit']) ) {
   $clean = htmlspecialchars($_POST['username'], ENT_QUOTES, 'UTF-8');
+  // 入力されたスクリプトは実行されないがDBには、「<」が「&lt;」に変換されずに記号のまま登録されている。DB側でもサニタイズしなければならないはず。
+  // そもそもサニタイズとエスケープ処理とは違うのか？＝＞エスケープはサニタイズの一種
   // preg_replace( '/\\r\\n|\\n|\\r/', '', $_POST['username']);
-  var_dump($clean);
 
   try {
     $pdo = new PDO ($dsn, $user, $password);
@@ -73,8 +105,7 @@ if( !empty($_POST['btn_submit']) ) {
     
     $stmt = $pdo->prepare($sql);
 
-    $stmt->bindValue(':username', $_POST['username'], PDO::PARAM_STR);
-
+    $stmt->bindValue(':username', $clean, PDO::PARAM_STR);
 
     $stmt -> execute();
 
@@ -88,8 +119,7 @@ if( !empty($_POST['btn_submit']) ) {
 
   // usernameがDB内に存在しているか確認
   if (!isset ($row['username'])) {
-
-    echo 'メールアドレス又はパスワードが間違っていますaaaa。';
+    echo 'メールアドレス又はパスワードが間違っています。';
     exit;
     //プログラム止める excit redirect
   } else {
@@ -116,7 +146,9 @@ if( !empty($_POST['btn_submit']) ) {
   
   0625より次のマター
   <script>alert("Hello");</script>対策
-  バリデーション
+  バリデーション（DBとphp両方でバリデーションかける）：
+  ・未入力
+  ・文字数制限
   サニタイズ
   リダイレクトしてログイン成功メッセージ
  -->
