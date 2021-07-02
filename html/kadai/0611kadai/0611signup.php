@@ -5,13 +5,9 @@ $dsn = 'mysql:host=mysql;dbname=test;charset=utf8';
 $user = "test";
 $password = "test";
 
-// サブミットされていて、かつ、入力なければ
-// サブミットにヌル含め何か入っていたら・・・
-if () {
-  $msg_flag = 1;
-}
-// もしフラグに1が入っていたら
-if (!empty($_POST['btn_submit']) || empty($_POST['username'])) {
+$error_message =[];
+// サブミットにヌルが入っていなければ
+if (!empty($_POST['btn_submit']) || empty($_POST['username']) || isset($_POST['btn_submit'])) {
   $error_message[] = "ユーザー名を入力してください";
 }
 
