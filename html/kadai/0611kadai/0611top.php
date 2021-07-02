@@ -4,11 +4,12 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>トップ画面</title>
+  <title>管理者画面</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
 </head>
 <body>
+<h1>管理者画面</h1>
   <div class="container container-background">
     <form class="container form-background" action="" method="POST">
       <div class="form-group">
@@ -33,12 +34,11 @@
     //コメントを投稿するためのコード
     if (!empty ($_POST["contents"]) ) {
       $clean = htmlspecialchars($_POST['contents'], ENT_QUOTES, 'UTF-8');
-
       try {
         // コメント投稿するためのコード
         $dbh = new PDO("mysql:host=mysql;dbname=test;charset=utf8", "$user", "$password");
         
-        $sql = "INSERT INTO users (contents) VALUES (:contents)";
+        $sql = "INSERT INTO posts (contents) VALUES (:contents)";
         
         $stmt = $dbh->prepare($sql);
 
@@ -54,14 +54,15 @@
     } else {
       echo "コメントを入力してください";
     }
-
+    
+    echo "ここは通っている" . "<br>";
     // コメント一覧を表示するためのコード
-      $sql_select = "SELECT * FROM users";
+      $sql_select = "SELECT * FROM posts ORDER BY create_times DESC" ;
       $res = $dbh->query ($sql_select);
 
       foreach ($res as $value) {
         $date = date('Y年m月d日 H時i分s秒',  strtotime($value['create_times']));
-        echo ("$value[id] 　|　");
+        echo "$value[id] 　|　";
         echo "<span class=\"create_times\">$date</span> <br>";
         echo "<p>$value[contents]</p>";
         echo "<form action=\"0611delete.php\" method=\"GET\">";
@@ -75,8 +76,7 @@
         echo "</form>";
         echo "<hr>";
       }
-
-
+    
       ?>
   </div>
 </body>
@@ -87,4 +87,7 @@
   ・投稿するためのフォームを表示
   ・投稿を編集、削除するためのフォームを表示
   ・投稿一覧を表示
+  ・右上にユーザー名を表示
+  ・ログアウトボタン：ログアウトしたら管理者画面から遷移して一覧が見られるだけ、編集削除ボタンは非表示になる
+  ・ページング
  -->

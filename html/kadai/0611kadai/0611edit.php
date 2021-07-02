@@ -9,9 +9,9 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
 </head>
   <body>
-      <form action="0603edit.php" method="POST">
+  <h1>編集するためのページ</h1>
+      <form action="./0611top.php" method="POST">
         <textarea name="contents-edits"><?php echo $_GET["edit_contents"]?></textarea>
-        <input type="submit" name="contents-btn" value="更新する">
         <input type="submit" name="contents-btn" value="更新する">
       </form>
 
