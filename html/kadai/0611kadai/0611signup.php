@@ -6,8 +6,9 @@ $user = "test";
 $password = "test";
 
 $error_message =[];
+
 // サブミットにヌルが入っていなければ
-if (!empty($_POST['btn_submit']) || empty($_POST['username']) || isset($_POST['btn_submit'])) {
+if (!empty($_POST['btn_submit']) && empty($_POST['username'])) {
   $error_message[] = "ユーザー名を入力してください";
 }
 
@@ -24,21 +25,23 @@ if (empty($error_message)) {
 
 // もしエラーメッセージが入っていなかったら下を実行
 if (!empty($error_message)) {
-  if( !empty($_POST['btn_submit']) ) {
-    $clean = htmlspecialchars($_POST['username'], ENT_QUOTES, 'UTF-8');
+  if(!empty($_POST['btn_submit']) ) {
+    $clean_user = htmlspecialchars($_POST['username'], ENT_QUOTES, 'UTF-8');
+    $clean_email = htmlspecialchars($_POST['email'], ENT_QUOTES, 'UTF-8');
 
     try {
       $pdo = new PDO ($dsn, $user, $password);
 
-      $sql = 'SELECT * FROM users WHERE username = :username';
+      $sql = 'SELECT * FROM users WHERE username = :username AND email = :email';
       
       $stmt = $pdo->prepare($sql);
 
-      $stmt->bindValue(':username', $clean, PDO::PARAM_STR);
+      $stmt->bindValue(':username', $clean_user, PDO::PARAM_STR);
+      $stmt->bindValue(':email', $clean_email, PDO::PARAM_STR);
 
       $stmt -> execute();
 
-      $row = $stmt->fetch(PDO::FETCH_ASSOC);
+      $row_user = $stmt->fetch(PDO::FETCH_ASSOC);
 
     } catch (PDOException $e) {
       $errorMessage = 'データベースエラー';
@@ -47,18 +50,19 @@ if (!empty($error_message)) {
     }
 
     // usernameがDB内に存在しているか確認
-    if (!isset ($row['username'])) {
-      $error_message[] = 'メールアドレス又はパスワードが間違っています。';
+    if (empty ($row_user['username']) || empty ($row_user['email'])) {
+      $error_message[] = 'メールアドレスまたはパスワードが間違っています。';
     } else {
       $flag = 1;
     }
+
 
     //パスワード確認後sessionにusernameを渡す
     if ($flag) {
       // session_regenerate_id(true); //session_idを新しく生成し、置き換える
       $_SESSION['USERNAME'] = $row['username'];
       // 遷移する
-      header('Location: ./0611top.php');
+      header('Location: https://www.google.com/?hl=ja');
       exit();
     }
   }
@@ -98,8 +102,8 @@ if (!empty($error_message)) {
           <legend>ログインフォーム</legend>
             ユーザー名：<input type="text" name="username" placeholder="ユーザー名を入力" value="">
             <br>
-            <!-- メールアドレス：<input type="email" name="email" placeholder="メールアドレスを入力" value="" >
-            <br> -->
+            メールアドレス：<input type="email" name="email" placeholder="メールアドレスを入力" value="" >
+            <br> 
           <input type="submit" name="btn_submit" value="ログイン">
         </fieldset>
       </form>

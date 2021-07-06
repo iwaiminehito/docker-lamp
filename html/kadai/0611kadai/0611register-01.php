@@ -33,7 +33,7 @@ if (isset($_POST["signUp"])) {
             $params = array(':username' => $username, ':email' => $email);
             $stmt->execute($params);
 
-            $signUpMessage = '登録が完了しました。あなたの登録IDは '. $userid. ' です。メールアドレスは '. $email. ' です。';  // ログイン時に使用するIDとパスワード
+            $signUpMessage = '登録が完了しました。';  // ログイン時に使用するIDとパスワード
         } catch (PDOException $e) {
             $errorMessage = 'データベースエラー';
             $e->getMessage(); 

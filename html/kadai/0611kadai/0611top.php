@@ -30,14 +30,15 @@
       $dsn = 'mysql:host=mysql;dbname=test;charset=utf8';
       $user = "test";
       $password = "test";
+      $dbh = new PDO("mysql:host=mysql;dbname=test;charset=utf8", "$user", "$password");
 
     //コメントを投稿するためのコード
     if (!empty ($_POST["contents"]) ) {
       $clean = htmlspecialchars($_POST['contents'], ENT_QUOTES, 'UTF-8');
+      
       try {
         // コメント投稿するためのコード
-        $dbh = new PDO("mysql:host=mysql;dbname=test;charset=utf8", "$user", "$password");
-        
+  
         $sql = "INSERT INTO posts (contents) VALUES (:contents)";
         
         $stmt = $dbh->prepare($sql);
@@ -55,7 +56,6 @@
       echo "コメントを入力してください";
     }
     
-    echo "ここは通っている" . "<br>";
     // コメント一覧を表示するためのコード
       $sql_select = "SELECT * FROM posts ORDER BY create_times DESC" ;
       $res = $dbh->query ($sql_select);
