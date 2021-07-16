@@ -24,7 +24,7 @@ if (empty($error_message)) {
 }
 
 // もしエラーメッセージが入っていなかったら下を実行
-if (!empty($error_message)) {
+if (empty($error_message)) {
   if(!empty($_POST['btn_submit']) ) {
     $clean_user = htmlspecialchars($_POST['username'], ENT_QUOTES, 'UTF-8');
     $clean_email = htmlspecialchars($_POST['email'], ENT_QUOTES, 'UTF-8');
@@ -60,9 +60,11 @@ if (!empty($error_message)) {
     //パスワード確認後sessionにusernameを渡す
     if ($flag) {
       // session_regenerate_id(true); //session_idを新しく生成し、置き換える
-      $_SESSION['USERNAME'] = $row['username'];
+      $_SESSION['username'] = $row_user['username'];
+      // $_SESSION['username'] = $_POST["username"];
       // 遷移する
-      header('Location: https://www.google.com/?hl=ja');
+      // header('Location: https://www.google.com/?hl=ja');
+      header('Location: 0611top.php');
       exit();
     }
   }
@@ -87,7 +89,7 @@ if (!empty($error_message)) {
 <?php endif;?>
   <section>
     <?php if( !empty($message_array) ){ ?>
-      <?php foreach( $message_array as $value ){ ?>
+      <!-- <?php foreach( $message_array as $value ){ ?>
         <article>
             <div class="info">
               <h2><?php echo htmlspecialchars($value['view_name'], ENT_QUOTES, 'UTF-8'); ?></h2>
@@ -95,7 +97,23 @@ if (!empty($error_message)) {
             </div>
             <p><?php echo nl2br( htmlspecialchars( $value['message'], ENT_QUOTES, 'UTF-8') ); ?></p>
         </article>
-      <?php } ?>
+    <?php } ?> -->
+    
+    <?php if (!empty($_SESSION["username"])) { ?>
+      
+      <form name="loginForm" action="" method="POST">
+        <fieldset>
+          <legend>ログインフォーム</legend>
+            ユーザー名：<input type="text" name="username" value="<?php echo htmlspecialchars ($_SESSION["username"], ENT_QUOTES, "UTF-8"); ?>>
+            <br>
+            メールアドレス：<input type="email" name="email" placeholder="メールアドレスを入力" value="" >
+            <br> 
+          <input type="submit" name="btn_submit" value="ログイン">
+        </fieldset>
+      </form>
+    
+    <?php } ?>
+
     <?php } else {?>
       <form name="loginForm" action="" method="POST">
         <fieldset>

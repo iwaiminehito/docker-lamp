@@ -1,3 +1,16 @@
+<?php
+session_start();
+
+if (empty ( $_SESSION['username'])) {
+  echo "ログインしてください" . '<br>';
+  echo '<a href="0611signup.php">ログインフォームへ</a>' . '<br>';
+  echo '<a href="0611register-01.php">新規登録はこちらから</a>';
+  exit();
+} else {
+  echo "ユーザー名：" . $_SESSION['username']  . "<br>";
+}
+?>
+
 <!DOCTYPE html>
 <html>
   <head>
@@ -5,18 +18,28 @@
     <title>削除の確認ページ</title>
   </head>
   <body>
+    <p>以下の内容を削除しますか？</p>
+    <?php 
+    echo "ID：" . $_GET["delete_id"] . "<br/>"; 
+    echo "コメント内容：" . $_GET["delete_contents"];
+    ?>
+
   <!-- 削除する投稿のidをpostで送る -->
   <form method="GET">
-  <input type="submit" value="削除する" name="posts_id">
+    <input type="submit" value="削除する" name="posts_id">
   </form>
-  <a href="0603kadai.php">キャンセル</a><br>
+
+  <form method="GET" action="0611top.php">
+    <input type="submit" value="キャンセル" name="">
+  </form>
+
   <p>
-      <a href="0603kadai.php">投稿一覧へ</a>
+      <a href="0611top.php">投稿一覧へ</a>
   </p> 
   </body>
 </html>
 <?php
-  var_dump($_GET['delete_id']);
+
 try {
   $user = "test";
   $password = "test";
@@ -26,40 +49,8 @@ try {
   $stmt = $dbh->prepare($sql_delete);
 
   $stmt->execute(array(':id' => $_GET['delete_id']));
-  var_dump($_GET['delete_id']);
-
-
-  echo "削除しました。";
 
 } catch (Exception $e) {
   echo 'エラーが発生しました。:' . $e->getMessage();
 }
-
-
-	// try {
-
-	// 	// SQL作成
-	// 	$stmt = $pdo->prepare("DELETE FROM posts WHERE id = :id");
-
-	// 	// 値をセット
-	// 	$stmt->bindValue( ':id', $_POST['message_id'], PDO::PARAM_INT);
-
-	// 	// SQLクエリの実行
-	// 	$stmt->execute();
-
-	// 	// コミット
-	// 	$res = $pdo->commit();
-
-	// } catch(Exception $e) {
-
-	// 	// エラーが発生した時はロールバック
-	// 	$pdo->rollBack();
-	// }
-
-	// // 削除に成功したら一覧に戻る
-	// if( $res ) {
-	// 	header("Location: ./admin.php");
-	// 	exit;
-	// }
-
 ?>

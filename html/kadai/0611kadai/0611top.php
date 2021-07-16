@@ -1,3 +1,18 @@
+<?php
+  session_start();
+?>
+
+
+  <?php
+        if (empty ( $_SESSION['username'])) {
+          echo "ログインしてください" . '<br>';
+          echo '<a href="0611signup.php">ログインフォームへ</a>' . '<br>';
+          echo '<a href="0611register-01.php">新規登録はこちらから</a>';
+          exit();
+        } else {
+          echo "ユーザー名：" . $_SESSION['username']  . "<br>";
+        }
+  ?>
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -9,75 +24,89 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
 </head>
 <body>
-<h1>管理者画面</h1>
-  <div class="container container-background">
-    <form class="container form-background" action="" method="POST">
-      <div class="form-group">
-        <div class="row">
-          <div class="col-1"></div>
-          <textarea name="contents" class="form-control form-control-lg col-10" placeholder="コメントを入力してください" ></textarea>
-          <div class="col-1"></div>
-        </div>
-        <div class="row">
-          <div class="col-4"></div>
-          <input type="submit" value="投稿する" class="input-submit btn btn-primary col-4">
-          <div class="col-4"></div>
-        </div>
-      </div>
+<div class="container">
+  <h1 class="top-title">ひと言掲示板</h1>
+
+  <div class="user-view">
+    <form method="POST">
+      <input type="submit" name="btn-logout" value="ログアウト" class="btn btn-secondary btn-sm">
     </form>
+  </div>
+    <div class="container container-background">
+      <form class="container form-background" action="" method="POST">
+        <div class="form-group">
+          <div class="row">
+            <div class="col-1"></div>
+            <textarea name="contents" class="form-control form-control-lg col-10" placeholder="コメントを入力してください" ></textarea>
+            <div class="col-1"></div>
+          </div>
+          <div class="row">
+            <div class="col-4"></div>
+            <input type="submit" value="投稿する" class="input-submit btn btn-primary col-4">
+            <div class="col-4"></div>
+          </div>
+        </div>
+      </form>
 
-    <?php
-      $dsn = 'mysql:host=mysql;dbname=test;charset=utf8';
-      $user = "test";
-      $password = "test";
-      $dbh = new PDO("mysql:host=mysql;dbname=test;charset=utf8", "$user", "$password");
-
-    //コメントを投稿するためのコード
-    if (!empty ($_POST["contents"]) ) {
-      $clean = htmlspecialchars($_POST['contents'], ENT_QUOTES, 'UTF-8');
-      
-      try {
-        // コメント投稿するためのコード
-  
-        $sql = "INSERT INTO posts (contents) VALUES (:contents)";
-        
-        $stmt = $dbh->prepare($sql);
-
-        $params = array(':contents' => $_POST["contents"]);
-
-        $stmt->execute($params);
-
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-
-      } catch (Exception $e) {
-          echo 'エラーが発生しました。:' . $e->getMessage();
-      } 
-    } else {
-      echo "コメントを入力してください";
-    }
-    
-    // コメント一覧を表示するためのコード
-      $sql_select = "SELECT * FROM posts ORDER BY create_times DESC" ;
-      $res = $dbh->query ($sql_select);
-
-      foreach ($res as $value) {
-        $date = date('Y年m月d日 H時i分s秒',  strtotime($value['create_times']));
-        echo "$value[id] 　|　";
-        echo "<span class=\"create_times\">$date</span> <br>";
-        echo "<p>$value[contents]</p>";
-        echo "<form action=\"0611delete.php\" method=\"GET\">";
-        echo "<input type=\"hidden\" name=\"delete_id\" value=\"" . $value["id"] . "\">";
-        echo "<input type=\"submit\" value=\"削除\">";
-        echo "</form>";
-        echo "<form action=\"0611edit.php\" method=\"GET\">";
-        echo "<input type=\"hidden\" name=\"edit_id\" value=\"" . $value["id"] . "\">";
-        echo "<input type=\"hidden\" name=\"edit_contents\" value=\"" . $value["contents"] . "\">";
-        echo "<input type=\"submit\" value=\"編集\">";
-        echo "</form>";
-        echo "<hr>";
+      <?php
+      if(!empty($_POST["btn-logout"])) {
+        unset($_SESSION["username"]);
+        echo "ログアウトしました" . "<br>";
+        echo '<a href="0611signup.php">ログインフォームへ</a>' . '<br>';
+        echo '<a href="0611register-01.php">新規登録はこちらから</a>';
+        exit();
       }
+  
+        $dsn = 'mysql:host=mysql;dbname=test;charset=utf8';
+        $user = "test";
+        $password = "test";
+        $dbh = new PDO("mysql:host=mysql;dbname=test;charset=utf8", "$user", "$password");
+
+      //コメントを投稿するためのコード
+      if (!empty ($_POST["contents"]) ) {
+        $clean = htmlspecialchars($_POST['contents'], ENT_QUOTES, 'UTF-8');
+        
+        try {
+          // コメント投稿するためのコード
     
-      ?>
+          $sql = "INSERT INTO posts (contents) VALUES (:contents)";
+          
+          $stmt = $dbh->prepare($sql);
+
+          $params = array(':contents' => $_POST["contents"]);
+
+          $stmt->execute($params);
+
+          $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        } catch (Exception $e) {
+            echo 'エラーが発生しました。:' . $e->getMessage();
+        } 
+      }
+      
+      // コメント一覧を表示するためのコード
+        $sql_select = "SELECT * FROM posts ORDER BY create_times DESC" ;
+        $res = $dbh->query ($sql_select);
+
+        foreach ($res as $value) {
+          $date = date('Y年m月d日 H時i分s秒',  strtotime($value['create_times']));
+          echo "$value[id] 　|　";
+          echo "<span class=\"create_times\">$date</span> <br>";
+          echo "<p>$value[contents]</p>";
+          echo "<form action=\"0611delete.php\" method=\"GET\">";
+          echo "<input type=\"hidden\" name=\"delete_id\" value=\"" . $value["id"] . "\">";
+          echo "<input type=\"hidden\" name=\"delete_contents\" value=\"" . $value["contents"] . "\">";
+          echo "<input type=\"submit\" value=\"削除\">";
+          echo "</form>";
+          echo "<form action=\"0611edit.php\" method=\"GET\">";
+          echo "<input type=\"hidden\" name=\"edit_id\" value=\"" . $value["id"] . "\">";
+          echo "<input type=\"hidden\" name=\"edit_contents\" value=\"" . $value["contents"] . "\">";
+          echo "<input type=\"submit\" value=\"編集\">";
+          echo "</form>";
+          echo "<hr>";
+        }
+      
+        ?>
   </div>
 </body>
 
