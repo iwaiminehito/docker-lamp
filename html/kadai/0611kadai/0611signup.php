@@ -59,11 +59,8 @@ if (empty($error_message)) {
 
     //パスワード確認後sessionにusernameを渡す
     if ($flag) {
-      // session_regenerate_id(true); //session_idを新しく生成し、置き換える
       $_SESSION['username'] = $row_user['username'];
-      // $_SESSION['username'] = $_POST["username"];
-      // 遷移する
-      // header('Location: https://www.google.com/?hl=ja');
+      $_SESSION['id'] = $row_user['id'];
       header('Location: 0611top.php');
       exit();
     }

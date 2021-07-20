@@ -1,18 +1,9 @@
 <?php
+
   session_start();
+  // $_POST["contents"] = [];
+
 ?>
-
-
-  <?php
-        if (empty ( $_SESSION['username'])) {
-          echo "ログインしてください" . '<br>';
-          echo '<a href="0611signup.php">ログインフォームへ</a>' . '<br>';
-          echo '<a href="0611register-01.php">新規登録はこちらから</a>';
-          exit();
-        } else {
-          echo "ユーザー名：" . $_SESSION['username']  . "<br>";
-        }
-  ?>
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -28,9 +19,6 @@
   <h1 class="top-title">ひと言掲示板</h1>
 
   <div class="user-view">
-    <form method="POST">
-      <input type="submit" name="btn-logout" value="ログアウト" class="btn btn-secondary btn-sm">
-    </form>
   </div>
     <div class="container container-background">
       <form class="container form-background" action="" method="POST">
@@ -48,65 +36,85 @@
         </div>
       </form>
 
-      <?php
-      if(!empty($_POST["btn-logout"])) {
-        unset($_SESSION["username"]);
-        echo "ログアウトしました" . "<br>";
-        echo '<a href="0611signup.php">ログインフォームへ</a>' . '<br>';
-        echo '<a href="0611register-01.php">新規登録はこちらから</a>';
-        exit();
-      }
-  
-        $dsn = 'mysql:host=mysql;dbname=test;charset=utf8';
-        $user = "test";
-        $password = "test";
-        $dbh = new PDO("mysql:host=mysql;dbname=test;charset=utf8", "$user", "$password");
 
-      //コメントを投稿するためのコード
-      if (!empty ($_POST["contents"]) ) {
-        $clean = htmlspecialchars($_POST['contents'], ENT_QUOTES, 'UTF-8');
-        
-        try {
-          // コメント投稿するためのコード
+
+<?php
+
+if (empty ( $_SESSION['username'])) {
+  echo "ログインしてください" . '<br>';
+  echo '<a href="0611signup.php">ログインフォームへ</a>' . '<br>';
+  echo '<a href="0611register-01.php">新規登録はこちらから</a>';
+  exit();
+} else {
+  echo "ユーザー名：" . $_SESSION['username']  . "<br>";
+}
+?>
+
+<form method="POST" class="btn-logout">
+  <input type="submit" name="btn-logout" value="ログアウト" class="btn btn-secondary btn-sm">
+</form>
+
+<?php
+if(!empty($_POST["btn-logout"])) {
+  unset($_SESSION["username"]);
+  unset($_SESSION["id"]);
+  echo "ログアウトしました" . "<br>";
+  echo '<a href="0611signup.php">ログインフォームへ</a>' . '<br>';
+  echo '<a href="0611register-01.php">新規登録はこちらから</a>';
+  exit();
+}
+
+$dsn = 'mysql:host=mysql;dbname=test;charset=utf8';
+$user = "test";
+$password = "test";
+$dbh = new PDO("mysql:host=mysql;dbname=test;charset=utf8", "$user", "$password");
+
+//コメントを投稿するためのコード
+if (!empty ($_POST["contents"]) ) {
+  $clean = htmlspecialchars($_POST['contents'], ENT_QUOTES, 'UTF-8');
+  $clean_id = $_SESSION['id'];
+
+  try {
+    $sql = "INSERT INTO posts (contents,user_id) VALUES (:contents,:user_id)";
     
-          $sql = "INSERT INTO posts (contents) VALUES (:contents)";
-          
-          $stmt = $dbh->prepare($sql);
+    $stmt = $dbh->prepare($sql);
 
-          $params = array(':contents' => $_POST["contents"]);
+    // $_POST["contents"]と同時に$_POST["id"]もカラムuser_idに入るようにする
+    $params = array(':contents' => $clean);
+    $params = array(':user_id' => $clean_id);
 
-          $stmt->execute($params);
+    $stmt->execute($params);
 
-          $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        } catch (Exception $e) {
-            echo 'エラーが発生しました。:' . $e->getMessage();
-        } 
-      }
-      
-      // コメント一覧を表示するためのコード
-        $sql_select = "SELECT * FROM posts ORDER BY create_times DESC" ;
-        $res = $dbh->query ($sql_select);
+  } catch (Exception $e) {
+    echo 'エラーが発生しました。:' . $e->getMessage();
+  } 
+}
 
-        foreach ($res as $value) {
-          $date = date('Y年m月d日 H時i分s秒',  strtotime($value['create_times']));
-          echo "$value[id] 　|　";
-          echo "<span class=\"create_times\">$date</span> <br>";
-          echo "<p>$value[contents]</p>";
-          echo "<form action=\"0611delete.php\" method=\"GET\">";
-          echo "<input type=\"hidden\" name=\"delete_id\" value=\"" . $value["id"] . "\">";
-          echo "<input type=\"hidden\" name=\"delete_contents\" value=\"" . $value["contents"] . "\">";
-          echo "<input type=\"submit\" value=\"削除\">";
-          echo "</form>";
-          echo "<form action=\"0611edit.php\" method=\"GET\">";
-          echo "<input type=\"hidden\" name=\"edit_id\" value=\"" . $value["id"] . "\">";
-          echo "<input type=\"hidden\" name=\"edit_contents\" value=\"" . $value["contents"] . "\">";
-          echo "<input type=\"submit\" value=\"編集\">";
-          echo "</form>";
-          echo "<hr>";
-        }
-      
-        ?>
+// コメント一覧を表示するためのコード
+$sql_select = "SELECT * FROM posts ORDER BY create_times DESC" ;
+$res = $dbh->query ($sql_select);
+
+foreach ($res as $value) {
+  $date = date('Y年m月d日 H時i分s秒',  strtotime($value['create_times']));
+  echo "$value[id] 　|　";
+  echo "<span class=\"create_times\">$date</span> <br>";
+  echo "<p>$value[contents]</p>";
+  echo "<form action=\"0611delete.php\" method=\"GET\">";
+  echo "<input type=\"hidden\" name=\"delete_id\" value=\"" . $value["id"] . "\">";
+  echo "<input type=\"hidden\" name=\"delete_contents\" value=\"" . $value["contents"] . "\">";
+  echo "<input type=\"submit\" value=\"削除\">";
+  echo "</form>";
+  echo "<form action=\"0611edit.php\" method=\"GET\">";
+  echo "<input type=\"hidden\" name=\"edit_id\" value=\"" . $value["id"] . "\">";
+  echo "<input type=\"hidden\" name=\"edit_contents\" value=\"" . $value["contents"] . "\">";
+  echo "<input type=\"submit\" value=\"編集\">";
+  echo "</form>";
+  echo "<hr>";
+}
+
+?>
   </div>
 </body>
 

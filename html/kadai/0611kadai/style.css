@@ -47,3 +47,8 @@ input {
 p {
   overflow-wrap: break-word;
 }
+
+.btn-logout {
+  width: 3rem;
+  color: blue;
+}
